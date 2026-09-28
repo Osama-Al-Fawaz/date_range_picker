@@ -61,6 +61,12 @@ class RangePickerController {
   /// If the [allowSingleTapDaySelection] is true, the [endDate] will be set to the [startDate]
   /// when the [date] is equal to the [startDate].
   void onDateChanged(DateTime date) {
+    if (maximumDateRangeLength != null && maximumDateRangeLength! < 2) {
+      startDate = date;
+      endDate = date;
+      onDateRangeChanged(DateRange(startDate!, endDate!));
+      return;
+    }
     if (startDate == null) {
       startDate = date;
       onDateRangeChanged(DateRange(startDate!, startDate!));
@@ -91,8 +97,7 @@ class RangePickerController {
     if (startDate == null || endDate == null) {
       return false;
     }
-    return dateIsStartOrEnd(date) ||
-        (date.isAfter(startDate!) && date.isBefore(endDate!));
+    return dateIsStartOrEnd(date) || (date.isAfter(startDate!) && date.isBefore(endDate!));
   }
 
   bool areSameDay(DateTime one, DateTime two) {
@@ -124,14 +129,11 @@ class RangePickerController {
 
     if (tmpStartDate != null && tmpEndDate == null) {
       var dateDifference = localizedDate.difference(tmpStartDate).inDays;
-      if (maximumDateRangeLength != null &&
-          dateDifference + 1 > maximumDateRangeLength!) {
+      if (maximumDateRangeLength != null && dateDifference + 1 > maximumDateRangeLength!) {
         return false;
       }
 
-      if (minimumDateRangeLength != null &&
-          dateDifference > 0 &&
-          dateDifference + 1 < minimumDateRangeLength!) {
+      if (minimumDateRangeLength != null && dateDifference > 0 && dateDifference + 1 < minimumDateRangeLength!) {
         return false;
       }
     }
@@ -238,8 +240,7 @@ class CalendarWidgetController {
   }
 
   /// The next month that can be displayed (two months can be displayed at the same time).
-  DateTime get nextMonth =>
-      DateTime(currentMonth.year, currentMonth.month + 1, 1);
+  DateTime get nextMonth => DateTime(currentMonth.year, currentMonth.month + 1, 1);
 
   /// Goes to the next month.
   void next() {
