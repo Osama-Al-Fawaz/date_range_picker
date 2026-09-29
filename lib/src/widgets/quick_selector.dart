@@ -26,34 +26,26 @@ class QuickSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ListView(
+    return IntrinsicWidth(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final quickDateRange in quickDateRanges)
             Row(
               children: [
-                Container(
-                  width: 4,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.horizontal(
-                        right: Radius.circular(2)),
-                    color: quickDateRange.dateRange == selectedDateRange
-                        ? theme.selectedQuickDateRangeColor ??
-                            Theme.of(context).primaryColor
-                        : Colors.transparent,
-                  ),
-                ),
-                const SizedBox(width: 8),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(2),
+                    color: quickDateRange.dateRange == selectedDateRange
+                        ? theme.selectedQuickDateRangeColor ?? Theme.of(context).primaryColor
+                        : Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(2),
                       onTap: () => onDateRangeChanged(quickDateRange.dateRange),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         child: Text(
                           quickDateRange.label,
                           textAlign: TextAlign.left,

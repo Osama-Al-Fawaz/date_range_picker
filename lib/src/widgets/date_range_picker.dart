@@ -5,16 +5,21 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 
 /// The default [CalendarTheme] used by the date range picker.
 const CalendarTheme kTheme = CalendarTheme(
-  selectedColor: Colors.blue,
-  dayNameTextStyle: TextStyle(color: Colors.black45, fontSize: 10),
-  inRangeColor: Color(0xFFD9EDFA),
-  inRangeTextStyle: TextStyle(color: Colors.blue),
-  selectedTextStyle: TextStyle(color: Colors.white),
-  todayTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  defaultTextStyle: TextStyle(color: Colors.black, fontSize: 12),
-  radius: 10,
-  tileSize: 40,
-  disabledTextStyle: TextStyle(color: Colors.grey),
+  selectedColor: Color(0xff009490),
+  dayNameTextStyle: TextStyle(color: Color(0xff616366), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  inRangeColor: Color(0xFFE2F0F1),
+  inRangeTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  selectedTextStyle: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  todayTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  defaultTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  radius: 25,
+  tileSize: 20,
+  disabledTextStyle: TextStyle(color: Color(0xffD2D4D9), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  monthTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 9, fontWeight: FontWeight.w600, height: 1.5),
+  quickDateRangeTextStyle: TextStyle(color: Color(0xff3F3F40), fontSize: 14, fontWeight: FontWeight.w400, height: 1.5),
+  quickDateRangeBackgroundColor: Colors.transparent,
+  selectedQuickDateRangeColor: Color(0xffE7E8EC),
+  separatorColor: Color(0xffF2F3F5),
 );
 
 /// A function that builds a day tile for the date range picker.
@@ -38,7 +43,8 @@ Widget kDayTileBuilder(
   }
 
   if (dayModel.isSelected) {
-    combinedTextStyle = combinedTextStyle.merge(theme.selectedTextStyle);
+    combinedTextStyle = combinedTextStyle.merge(
+        theme.selectedTextStyle.copyWith(color: dayModel.isEnd && !dayModel.isStart ? theme.selectedColor : null));
   }
 
   if (!dayModel.isSelectable) {
@@ -49,16 +55,12 @@ Widget kDayTileBuilder(
     size: theme.tileSize,
     textStyle: combinedTextStyle,
     backgroundColor: dayModel.isInRange ? theme.inRangeColor : null,
-    color: dayModel.isSelected ? theme.selectedColor : null,
+    color: dayModel.isSelected && dayModel.isStart ? theme.selectedColor : null,
     text: dayModel.date.day.toString(),
     value: dayModel.date,
     onTap: dayModel.isSelectable ? onTap : null,
-    radius: BorderRadius.horizontal(
-      left: Radius.circular(
-          dayModel.isEnd && dayModel.isInRange ? 0 : theme.radius),
-      right: Radius.circular(
-          dayModel.isStart && dayModel.isInRange ? 0 : theme.radius),
-    ),
+    radius: BorderRadius.circular(theme.radius),
+    borderColor: dayModel.isEnd ? theme.selectedColor : null,
     backgroundRadius: BorderRadius.horizontal(
       left: Radius.circular(dayModel.isStart ? theme.radius : 0),
       right: Radius.circular(dayModel.isEnd ? theme.radius : 0),
@@ -75,11 +77,11 @@ class DayNamesRow extends StatelessWidget {
   /// * [lengthOfDateName] - The length of the date name to display. Defaults to 3 (e.g., "Mon").
   /// * [firstDayOfWeek] - The first day of the week, where 0 is Sunday and 6 is Saturday. Defaults to 0.
   /// * [weekDays] - The names of the days of the week to display. If null, defaults to the default week days.
-  DayNamesRow({
+  const DayNamesRow({
     Key? key,
     required this.textStyle,
     this.weekDays,
-    this.lengthOfDateName = 3,
+    this.lengthOfDateName = 2,
     this.firstDayOfWeek = 0,
   }) : super(key: key);
 
@@ -91,9 +93,7 @@ class DayNamesRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var finalWeekDays = (weekDays ??
-            defaultWeekDays(
-                lengthOfDateNames: lengthOfDateName,
-                locale: Localizations.localeOf(context).languageCode))
+            defaultWeekDays(lengthOfDateNames: lengthOfDateName, locale: Localizations.localeOf(context).languageCode))
         .shiftBy(firstDayOfWeek);
 
     return Row(
@@ -152,7 +152,7 @@ class DateRangePickerWidget extends StatefulWidget {
     this.separatorThickness = 1,
     this.allowSingleTapDaySelection = false,
     this.firstDayOfWeek = 0,
-    this.lengthOfDateName = 3,
+    this.lengthOfDateName = 2,
   })  : assert(
           firstDayOfWeek >= 0 && firstDayOfWeek <= 6,
           'firstDayOfWeek must be in the range [0..6].',
@@ -230,9 +230,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
 
   late final calendarController = CalendarWidgetController(
     controller: controller,
-    currentMonth: widget.initialDisplayedDate ??
-        widget.initialDateRange?.start ??
-        DateTime.now(),
+    currentMonth: widget.initialDisplayedDate ?? widget.initialDateRange?.start ?? DateTime.now(),
   );
 
   late final StreamSubscription subscription;
@@ -254,98 +252,90 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Widget child = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: widget.theme.tileSize * 7 * (widget.doubleMonth ? 2 : 1),
-          child: MonthSelectorAndDoubleIndicator(
-            doubleMonth: widget.doubleMonth,
-            onPrevious: calendarController.previous,
-            onNext: calendarController.next,
-            currentMonth: calendarController.currentMonth,
-            nextMonth: calendarController.nextMonth,
-            style: widget.theme.monthTextStyle,
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        IntrinsicHeight(
-          child: Row(
-            children: [
-              EnrichedMonthWrapWidget(
-                theme: widget.theme,
-                onDateChanged: calendarController.onDateChanged,
-                days: calendarController.retrieveDatesForMonth(),
-                delta: calendarController
-                    .retrieveDeltaForMonth(widget.firstDayOfWeek),
-                firstDayOfWeek: widget.firstDayOfWeek,
-                lengthOfDateName: widget.lengthOfDateName,
-              ),
-              if (widget.doubleMonth) ...{
-                if (widget.displayMonthsSeparator)
-                  VerticalDivider(
-                    thickness: widget.separatorThickness,
-                    color: widget.theme.separatorColor,
-                  ),
-                EnrichedMonthWrapWidget(
-                  theme: widget.theme,
-                  onDateChanged: calendarController.onDateChanged,
-                  days: calendarController.retrieveDatesForNextMonth(),
-                  delta: calendarController
-                      .retrieveDeltaForNextMonth(widget.firstDayOfWeek),
-                  firstDayOfWeek: widget.firstDayOfWeek,
-                  lengthOfDateName: widget.lengthOfDateName,
-                ),
-              }
-            ],
-          ),
-        ),
-      ],
-    );
-
-    if (widget.quickDateRanges.isNotEmpty) {
-      child = Row(
+    return IntrinsicHeight(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 200,
-            decoration: BoxDecoration(
-              color: widget.theme.quickDateRangeBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(widget.theme.radius),
+          if (widget.quickDateRanges.isNotEmpty)
+            Flexible(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: widget.theme.quickDateRangeBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(widget.theme.radius),
+                  ),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: QuickSelectorWidget(
+                  selectedDateRange: controller.dateRange,
+                  quickDateRanges: widget.quickDateRanges,
+                  onDateRangeChanged: (dateRange) {
+                    calendarController.setDateRange(dateRange);
+                  },
+                  theme: widget.theme,
+                ),
               ),
             ),
-            padding: const EdgeInsets.only(right: 16),
-            child: QuickSelectorWidget(
-              selectedDateRange: controller.dateRange,
-              quickDateRanges: widget.quickDateRanges,
-              onDateRangeChanged: (dateRange) {
-                calendarController.setDateRange(dateRange);
-              },
-              theme: widget.theme,
+          if (widget.quickDateRanges.isNotEmpty) VerticalDivider(color: widget.theme.separatorColor),
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: widget.theme.tileSize * 7 * (widget.doubleMonth ? 2 : 1) + (widget.doubleMonth ? 16 : 0),
+                    child: MonthSelectorAndDoubleIndicator(
+                      doubleMonth: widget.doubleMonth,
+                      onPrevious: calendarController.previous,
+                      onNext: calendarController.next,
+                      currentMonth: calendarController.currentMonth,
+                      nextMonth: calendarController.nextMonth,
+                      style: widget.theme.monthTextStyle,
+                      previousMonthSelector: widget.theme.previousMonthSelector,
+                      nextMonthSelector: widget.theme.nextMonthSelector,
+                    ),
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        EnrichedMonthWrapWidget(
+                          fillBefore: true,
+                          theme: widget.theme,
+                          onDateChanged: calendarController.onDateChanged,
+                          days: calendarController.retrieveDatesForMonth(
+                              fillBefore: true, fillAfter: !widget.doubleMonth),
+                          delta: calendarController.retrieveDeltaForMonth(widget.firstDayOfWeek),
+                          firstDayOfWeek: widget.firstDayOfWeek,
+                          lengthOfDateName: widget.lengthOfDateName,
+                        ),
+                        if (widget.doubleMonth) const SizedBox(width: 8),
+                        if (widget.doubleMonth && widget.displayMonthsSeparator)
+                          VerticalDivider(
+                            thickness: widget.separatorThickness,
+                            color: widget.theme.separatorColor,
+                          ),
+                        if (widget.doubleMonth) const SizedBox(width: 8),
+                        if (widget.doubleMonth)
+                          EnrichedMonthWrapWidget(
+                            theme: widget.theme,
+                            onDateChanged: calendarController.onDateChanged,
+                            days: calendarController.retrieveDatesForNextMonth(fillAfter: true),
+                            delta: calendarController.retrieveDeltaForNextMonth(widget.firstDayOfWeek),
+                            firstDayOfWeek: widget.firstDayOfWeek,
+                            lengthOfDateName: widget.lengthOfDateName,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          Container(
-            color: Colors.black12,
-            width: 1,
-            height: double.infinity,
-            margin: const EdgeInsets.only(right: 16),
-          ),
-          child,
-          if (widget.quickDateRanges.isNotEmpty)
-            const SizedBox(
-              width: 16,
-            ),
         ],
-      );
-    }
-
-    return SizedBox(
-      height: widget.height,
-      child: child,
+      ),
     );
   }
 }
@@ -359,7 +349,8 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
     required this.days,
     required this.delta,
     this.firstDayOfWeek = 0,
-    this.lengthOfDateName = 3,
+    this.lengthOfDateName = 2,
+    this.fillBefore = false,
   }) : super(key: key);
 
   /// The theme to use for the calendar.
@@ -380,6 +371,8 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
   /// The length of the date name in the day names row.
   final int lengthOfDateName;
 
+  final bool fillBefore;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -391,8 +384,8 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
             firstDayOfWeek: firstDayOfWeek,
             lengthOfDateName: lengthOfDateName,
           ),
-          const SizedBox(height: 16),
           MonthWrapWidget(
+            fillBefore: fillBefore,
             days: days,
             delta: delta,
             dayTileBuilder: (dayModel) => kDayTileBuilder(

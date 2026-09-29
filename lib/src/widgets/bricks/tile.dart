@@ -63,7 +63,7 @@ class DayTileWidget extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: color,
-            border: Border.all(color: borderColor ?? Colors.transparent),
+            border: Border.all(color: borderColor ?? Colors.transparent, width: 2),
             borderRadius: radius,
           ),
           child: Text(

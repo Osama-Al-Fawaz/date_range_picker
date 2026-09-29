@@ -11,6 +11,8 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
     this.nextMonth,
     this.style,
     this.doubleMonth = true,
+    this.previousMonthSelector,
+    this.nextMonthSelector,
   })  : assert(doubleMonth ? nextMonth != null : true),
         super(key: key);
 
@@ -32,36 +34,74 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
   /// The text style of the displayed month.
   final TextStyle? style;
 
+  ///the widget to navigate to previous month. typically an arrow icon
+  ///
+  ///navigation is already handled by the package
+  final Widget? previousMonthSelector;
+
+  ///the widget to navigate to next month. typically an arrow icon
+  ///
+  ///navigation is already handled by the package
+  final Widget? nextMonthSelector;
+
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          onPressed: onPrevious,
-          splashRadius: 16,
-          icon: const Icon(Icons.keyboard_arrow_left),
-        ),
+        if (doubleMonth)
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(25),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(25),
+              onTap: onPrevious,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+              ),
+            ),
+          ),
         Expanded(
           child: Text(
-            DateFormat.yMMM().format(currentMonth),
-            textAlign: TextAlign.center,
+            DateFormat('MMMM yyyy').format(currentMonth),
+            textAlign: doubleMonth ? TextAlign.center : TextAlign.start,
             style: style,
           ),
         ),
-        if (doubleMonth) ...[
-          const SizedBox(width: 16),
+        if (!doubleMonth)
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(25),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(25),
+              onTap: onPrevious,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+              ),
+            ),
+          ),
+        if (doubleMonth) const SizedBox(width: 16),
+        if (doubleMonth)
           Expanded(
             child: Text(
-              DateFormat.yMMM().format(nextMonth!),
+              DateFormat('MMMM yyyy').format(nextMonth!),
               textAlign: TextAlign.center,
               style: style,
             ),
           ),
-        ],
-        IconButton(
-          splashRadius: 16,
-          onPressed: onNext,
-          icon: const Icon(Icons.keyboard_arrow_right),
+        Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(25),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(25),
+            onTap: onNext,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: nextMonthSelector ?? const Icon(Icons.keyboard_arrow_right),
+            ),
+          ),
         ),
       ],
     );

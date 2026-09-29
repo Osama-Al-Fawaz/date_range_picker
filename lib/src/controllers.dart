@@ -173,31 +173,63 @@ class RangePickerController {
     return dateIsStart(date) || dateIsEnd(date);
   }
 
-  List<DayModel> retrieveDatesForMonth(final DateTime month) {
-    // Little hack to get the number of days in the month.
-    int daysInMonth = DateTime(
+  List<DayModel> retrieveDatesForMonth(
+    DateTime month, {
+    bool fillBefore = false,
+    bool fillAfter = false,
+  }) {
+    final List<DayModel> dayModels = [];
+
+    final int delta = retrieveDeltaForMonth(month);
+
+    // Fill previous month days.
+    if (fillBefore) {
+      for (int i = delta; i > 0; i--) {
+        final date = DateTime(month.year, month.month, 1 - i);
+        dayModels.add(_buildDayModel(date));
+      }
+    }
+
+    // Current month days.
+    final int daysInMonth = DateTime(
       month.year,
       month.month + 1,
       0,
     ).day;
 
-    final List<DayModel> dayModels = [];
-
     for (int i = 1; i <= daysInMonth; i++) {
-      var date = DateTime(month.year, month.month, i);
+      final date = DateTime(month.year, month.month, i);
+      dayModels.add(_buildDayModel(date));
+    }
 
-      dayModels.add(DayModel(
-        date: date,
-        isSelected: dateIsStartOrEnd(date),
-        isStart: dateIsStart(date),
-        isEnd: dateIsEnd(date),
-        isSelectable: dateIsSelectable(date),
-        isToday: areSameDay(date, DateTime.now()),
-        isInRange: dateInSelectedRange(date),
-      ));
+    if (fillAfter) {
+      final occupiedCells = dayModels.length + (fillBefore ? 0 : delta);
+
+      final totalCells = ((occupiedCells / 7).ceil()) * 7;
+      final trailingCells = totalCells - occupiedCells;
+
+      for (int i = 1; i <= trailingCells; i++) {
+        dayModels.add(
+          _buildDayModel(
+            DateTime(month.year, month.month + 1, i),
+          ),
+        );
+      }
     }
 
     return dayModels;
+  }
+
+  DayModel _buildDayModel(DateTime date) {
+    return DayModel(
+      date: date,
+      isSelected: dateIsStartOrEnd(date),
+      isStart: dateIsStart(date),
+      isEnd: dateIsEnd(date),
+      isSelectable: dateIsSelectable(date),
+      isToday: areSameDay(date, DateTime.now()),
+      isInRange: dateInSelectedRange(date),
+    );
   }
 
   /// Returns the number of days to skip at the beginning of the month.
@@ -258,13 +290,13 @@ class CalendarWidgetController {
   }
 
   /// Returns the dates for the current month.
-  List<DayModel> retrieveDatesForMonth() {
-    return controller.retrieveDatesForMonth(currentMonth);
+  List<DayModel> retrieveDatesForMonth({bool fillBefore = false, bool fillAfter = false}) {
+    return controller.retrieveDatesForMonth(currentMonth, fillBefore: fillBefore, fillAfter: fillAfter);
   }
 
   /// Returns the dates for the next month.
-  List<DayModel> retrieveDatesForNextMonth() {
-    return controller.retrieveDatesForMonth(nextMonth);
+  List<DayModel> retrieveDatesForNextMonth({bool fillBefore = false, bool fillAfter = false}) {
+    return controller.retrieveDatesForMonth(nextMonth, fillBefore: fillBefore, fillAfter: fillAfter);
   }
 
   /// Returns the number of days to skip at the beginning of the current month.
