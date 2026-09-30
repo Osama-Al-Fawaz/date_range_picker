@@ -86,14 +86,12 @@ class DateRangeFormField extends FormField<DateRange> {
     DateFormat? dateFormat,
   }) : super(
           key: key,
-          initialValue:
-              initialValue ?? DateRange(DateTime.now(), DateTime.now()),
+          initialValue: initialValue ?? DateRange(DateTime.now(), DateTime.now()),
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<DateRange> state) {
             final selectedDateRange = state.value;
-            final inputDecoration =
-                (decoration ?? const InputDecoration()).applyDefaults(
+            final inputDecoration = (decoration ?? const InputDecoration()).applyDefaults(
               Theme.of(state.context).inputDecorationTheme,
             );
 

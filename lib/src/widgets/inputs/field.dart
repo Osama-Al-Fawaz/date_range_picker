@@ -7,8 +7,7 @@ import 'package:intl/intl.dart';
 typedef DateRangeLabelBuilder = String Function(DateRange dateRange);
 
 /// Default label builder for [DateRangeField] if no custom builder is provided.
-String _defaultDateRangeLabelBuilder(DateRange dateRange,
-    [DateFormat? dateFormat]) {
+String _defaultDateRangeLabelBuilder(DateRange dateRange, [DateFormat? dateFormat]) {
   dateFormat ??= DateFormat.yMMMd();
   final start = dateFormat.format(dateRange.start);
   final end = dateFormat.format(dateRange.end);
@@ -39,7 +38,7 @@ String _defaultDateRangeLabelBuilder(DateRange dateRange,
 ///   },
 /// )
 /// ```
-class DateRangeField extends StatelessWidget {
+class DateRangeField extends StatefulWidget {
   const DateRangeField({
     Key? key,
     required this.pickerBuilder,
@@ -96,47 +95,59 @@ class DateRangeField extends StatelessWidget {
   }) showDateRangePicker;
 
   @override
+  State<DateRangeField> createState() => _DateRangeFieldState();
+}
+
+class _DateRangeFieldState extends State<DateRangeField> {
+  ValueNotifier<bool> isFocused = ValueNotifier(false);
+  @override
   Widget build(BuildContext context) {
-    final inputDecoration =
-        (decoration ?? const InputDecoration()).applyDefaults(
+    final inputDecoration = (widget.decoration ?? const InputDecoration()).applyDefaults(
       Theme.of(context).inputDecorationTheme,
     );
 
     return InkWell(
-      onTap: showPicker(context),
-      child: InputDecorator(
-        decoration: inputDecoration,
-        isEmpty: selectedDateRange == null,
-        child: childBuilder?.call(context, selectedDateRange) ??
-            Text(
-              formatDateRange(selectedDateRange),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: enabled ? null : Theme.of(context).disabledColor,
+      onTap: widget.enabled ? () => showPicker(context)?.call() : null,
+      child: ValueListenableBuilder(
+          valueListenable: isFocused,
+          builder: (context, value, child) {
+            return InputDecorator(
+              isFocused: value,
+              decoration: inputDecoration,
+              isEmpty: widget.selectedDateRange == null,
+              child: widget.childBuilder?.call(context, widget.selectedDateRange) ??
+                  Text(
+                    formatDateRange(widget.selectedDateRange),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: widget.enabled ? null : Theme.of(context).disabledColor,
+                        ),
                   ),
-            ),
-      ),
+            );
+          }),
     );
   }
 
   String formatDateRange(DateRange? dateRange) {
     if (dateRange == null) return '';
 
-    if (labelBuilder != null) {
-      return labelBuilder!(dateRange);
+    if (widget.labelBuilder != null) {
+      return widget.labelBuilder!(dateRange);
     }
     return _defaultDateRangeLabelBuilder(dateRange, null);
   }
 
-  /// Shows the picker dialog if [enabled] is true.
+  /// Shows the picker dialog if [widget.enabled] is true.
   VoidCallback? showPicker(BuildContext context) {
-    if (!enabled) return null;
+    if (!widget.enabled) return null;
     return () async {
-      final DateRange? dateRange = await showDateRangePicker(
+      isFocused.value = true;
+      final DateRange? dateRange = await widget.showDateRangePicker(
         widgetContext: context,
-        pickerBuilder: pickerBuilder,
-        dialogFooterBuilder: dialogFooterBuilder,
+        pickerBuilder: widget.pickerBuilder,
+        dialogFooterBuilder: widget.dialogFooterBuilder,
       );
-      onDateRangeSelected?.call(dateRange);
+      isFocused.value = false;
+      widget.onDateRangeSelected?.call(dateRange);
     };
   }
 }
