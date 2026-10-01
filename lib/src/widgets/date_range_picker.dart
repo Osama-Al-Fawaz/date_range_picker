@@ -288,14 +288,14 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                   SizedBox(
                     width: widget.theme.tileSize * 7 * (widget.doubleMonth ? 2 : 1) + (widget.doubleMonth ? 16 : 0),
                     child: MonthSelectorAndDoubleIndicator(
+                      theme: widget.theme,
                       doubleMonth: widget.doubleMonth,
                       onPrevious: calendarController.previous,
                       onNext: calendarController.next,
+                      onSetYearOrMonth: (DateTime selectedYearOrMonth) => calendarController.currentMonth =
+                          DateTime(selectedYearOrMonth.year, selectedYearOrMonth.month),
                       currentMonth: calendarController.currentMonth,
                       nextMonth: calendarController.nextMonth,
-                      style: widget.theme.monthTextStyle,
-                      previousMonthSelector: widget.theme.previousMonthSelector,
-                      nextMonthSelector: widget.theme.nextMonthSelector,
                     ),
                   ),
                   IntrinsicHeight(

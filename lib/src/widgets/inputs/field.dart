@@ -51,6 +51,7 @@ class DateRangeField extends StatefulWidget {
     this.labelBuilder,
     DateFormat? dateFormat,
     this.showDateRangePicker = showDateRangePickerDialogOnWidget,
+    this.onFocusChange,
   })  : assert(
           !(labelBuilder != null && dateFormat != null),
           "You cannot provide both a labelBuilder and a dateFormat. Use one or the other.",
@@ -94,12 +95,21 @@ class DateRangeField extends StatefulWidget {
     Widget Function({DateRange? selectedDateRange})? dialogFooterBuilder,
   }) showDateRangePicker;
 
+  final void Function(bool isFocuses)? onFocusChange;
+
   @override
   State<DateRangeField> createState() => _DateRangeFieldState();
 }
 
 class _DateRangeFieldState extends State<DateRangeField> {
   ValueNotifier<bool> isFocused = ValueNotifier(false);
+
+  @override
+  void initState() {
+    isFocused.addListener(() => widget.onFocusChange?.call(isFocused.value));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final inputDecoration = (widget.decoration ?? const InputDecoration()).applyDefaults(

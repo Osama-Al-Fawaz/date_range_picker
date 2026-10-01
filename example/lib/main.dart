@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -93,8 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 label: Text("Date range picker"),
                                 hintText: 'Please select a date range',
                               ),
-                              pickerBuilder: (x, y) =>
-                                  datePickerBuilder(x, y, false),
+                              pickerBuilder: (x, y) => datePickerBuilder(x, y, false),
                             ),
                           )
                         ],
@@ -119,24 +117,24 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             const SizedBox(height: 20),
                             const Text("The month selector:"),
-                            SizedBox(
-                              width: 450,
-                              child: MonthSelectorAndDoubleIndicator(
-                                currentMonth: DateTime(2023, 11, 20),
-                                onNext: () => debugPrint("Next"),
-                                onPrevious: () => debugPrint("Previous"),
-                                nextMonth: DateTime(2023, 12, 20),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   width: 450,
+                            //   child: MonthSelectorAndDoubleIndicator(
+                            //     onSetYearOrMonth: (selectedYearOrMonth) {},
+                            //     currentMonth: DateTime(2023, 11, 20),
+                            //     onNext: () => debugPrint("Next"),
+                            //     onPrevious: () => debugPrint("Previous"),
+                            //     nextMonth: DateTime(2023, 12, 20), theme: ,
+                            //   ),
+                            // ),
                             const SizedBox(height: 20),
                             const Text("A button to open the picker:"),
                             TextButton(
-                              onPressed: () => showDateRangePickerModalDialog(
-                                  context: context, builder: datePickerBuilder).then(
-                                (value) {
-                                  debugPrint("Selected date range: $value");
-                                }
-                              ),
+                              onPressed: () =>
+                                  showDateRangePickerModalDialog(context: context, builder: datePickerBuilder)
+                                      .then((value) {
+                                debugPrint("Selected date range: $value");
+                              }),
                               child: const Text("Open the picker"),
                             ),
                             const SizedBox(height: 20),
@@ -150,40 +148,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                     QuickDateRange(
                                       label: 'Last 3 days',
                                       dateRange: DateRange(
-                                        DateTime.now()
-                                            .subtract(const Duration(days: 3)),
+                                        DateTime.now().subtract(const Duration(days: 3)),
                                         DateTime.now(),
                                       ),
                                     ),
                                     QuickDateRange(
                                       label: 'Last 7 days',
                                       dateRange: DateRange(
-                                        DateTime.now()
-                                            .subtract(const Duration(days: 7)),
+                                        DateTime.now().subtract(const Duration(days: 7)),
                                         DateTime.now(),
                                       ),
                                     ),
                                     QuickDateRange(
                                       label: 'Last 30 days',
                                       dateRange: DateRange(
-                                        DateTime.now()
-                                            .subtract(const Duration(days: 30)),
+                                        DateTime.now().subtract(const Duration(days: 30)),
                                         DateTime.now(),
                                       ),
                                     ),
                                     QuickDateRange(
                                       label: 'Last 90 days',
                                       dateRange: DateRange(
-                                        DateTime.now()
-                                            .subtract(const Duration(days: 90)),
+                                        DateTime.now().subtract(const Duration(days: 90)),
                                         DateTime.now(),
                                       ),
                                     ),
                                     QuickDateRange(
                                       label: 'Last 180 days',
                                       dateRange: DateRange(
-                                        DateTime.now().subtract(
-                                            const Duration(days: 180)),
+                                        DateTime.now().subtract(const Duration(days: 180)),
                                         DateTime.now(),
                                       ),
                                     ),
@@ -205,8 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget datePickerBuilder(
-          BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
+  Widget datePickerBuilder(BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
           [bool doubleMonth = true]) =>
       DateRangePickerWidget(
         firstDayOfWeek: 1, // 1 = Monday
@@ -254,8 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialDateRange: selectedDateRange,
         disabledDates: [DateTime(2023, 11, 20)],
         maxDate: DateTime(2023, 12, 31),
-        initialDisplayedDate:
-            selectedDateRange?.start ?? DateTime(2023, 11, 20),
+        initialDisplayedDate: selectedDateRange?.start ?? DateTime(2023, 11, 20),
         onDateRangeChanged: onDateRangeChanged,
         height: 350,
         theme: const CalendarTheme(

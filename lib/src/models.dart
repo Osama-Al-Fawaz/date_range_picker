@@ -118,6 +118,9 @@ class CalendarTheme {
   /// The text style for the months.
   final TextStyle? monthTextStyle;
 
+  /// The text style for the year in single month style.
+  final TextStyle? yearTextStyle;
+
   /// The text style for the day names.
   final TextStyle dayNameTextStyle;
 
@@ -143,6 +146,9 @@ class CalendarTheme {
   ///navigation is already handled by the package
   final Widget? nextMonthSelector;
 
+  final Widget? dropDownTrailingIcon;
+
+  final Color? monthAndYearMenuColor;
   const CalendarTheme({
     required this.selectedColor,
     required this.inRangeColor,
@@ -157,6 +163,7 @@ class CalendarTheme {
     ),
     this.quickDateRangeBackgroundColor,
     this.monthTextStyle,
+    this.yearTextStyle,
     this.dayNameTextStyle = const TextStyle(color: Colors.black45, fontSize: 10),
     required this.radius,
     required this.tileSize,
@@ -164,6 +171,8 @@ class CalendarTheme {
     this.previousMonthSelector,
     this.nextMonthSelector,
     this.separatorColor,
+    this.dropDownTrailingIcon,
+    this.monthAndYearMenuColor,
   });
 }
 
