@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 /// Returns the default week days as strings (using intl).
-List<String> defaultWeekDays({int lengthOfDateNames = 3, String? locale}) {
+List<String> defaultWeekDays({int lengthOfDateNames = 2, String? locale}) {
   DateFormat dateFormat;
 
   try {
@@ -11,13 +11,10 @@ List<String> defaultWeekDays({int lengthOfDateNames = 3, String? locale}) {
     dateFormat = DateFormat.E();
   }
 
-  return dateFormat.dateSymbols.WEEKDAYS
-      .map((e) => e.substring(0, lengthOfDateNames))
-      .toList();
+  return dateFormat.dateSymbols.WEEKDAYS.map((e) => e.substring(0, lengthOfDateNames)).toList();
 }
 
 extension ListUtils on List {
   /// Shifts the list by "amount" places
-  shiftBy(int amount) =>
-      amount > 0 ? (sublist(amount)..addAll(sublist(0, amount))) : this;
+  shiftBy(int amount) => amount > 0 ? (sublist(amount)..addAll(sublist(0, amount))) : this;
 }

@@ -47,7 +47,7 @@ void main() {
       expect(find.byType(DayTileWidget), findsWidgets);
     });
 
-    testWidgets('renders correctly and initializes with initial dateRange 3 length names', (WidgetTester tester) async {
+    testWidgets('renders correctly and initializes with initial dateRange 2 length names', (WidgetTester tester) async {
       final initialDateRange = DateRange(DateTime(2023, 1, 1), DateTime(2023, 1, 5));
       final minDate = DateTime(2022, 1, 1);
       final maxDate = DateTime(2023, 12, 31);
@@ -70,7 +70,7 @@ void main() {
       expect(find.byType(DateRangePickerWidget), findsOneWidget);
       expect(find.byType(MonthSelectorAndDoubleIndicator), findsOneWidget);
       expect(find.byType(DayNamesRow), findsNWidgets(2));
-      expect(find.text('Mon'), findsExactly(2));
+      expect(find.text('Mo'), findsExactly(2));
       expect(find.byType(MonthWrapWidget), findsNWidgets(2));
       expect(find.byType(DayTileWidget), findsWidgets);
     });
