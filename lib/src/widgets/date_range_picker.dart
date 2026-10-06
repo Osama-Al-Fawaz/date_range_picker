@@ -281,7 +281,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
           if (widget.quickDateRanges.isNotEmpty) VerticalDivider(color: widget.theme.separatorColor),
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -380,10 +380,13 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
       width: theme.tileSize * 7,
       child: Column(
         children: [
-          DayNamesRow(
-            textStyle: theme.dayNameTextStyle,
-            firstDayOfWeek: firstDayOfWeek,
-            lengthOfDateName: lengthOfDateName,
+          SizedBox(
+            height: theme.tileSize,
+            child: DayNamesRow(
+              textStyle: theme.dayNameTextStyle,
+              firstDayOfWeek: firstDayOfWeek,
+              lengthOfDateName: lengthOfDateName,
+            ),
           ),
           MonthWrapWidget(
             fillBefore: fillBefore,
