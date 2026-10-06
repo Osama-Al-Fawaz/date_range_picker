@@ -147,6 +147,7 @@ class CalendarTheme {
   final Widget? nextMonthSelector;
 
   final Widget? dropDownTrailingIcon;
+  final TextStyle? menuItemsTextStyle;
 
   final Color? monthAndYearMenuColor;
   const CalendarTheme({
@@ -173,6 +174,7 @@ class CalendarTheme {
     this.separatorColor,
     this.dropDownTrailingIcon,
     this.monthAndYearMenuColor,
+    this.menuItemsTextStyle,
   });
 }
 
