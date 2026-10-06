@@ -6,16 +6,16 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 /// The default [CalendarTheme] used by the date range picker.
 const CalendarTheme kTheme = CalendarTheme(
   selectedColor: Color(0xff009490),
-  dayNameTextStyle: TextStyle(color: Color(0xff616366), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  dayNameTextStyle: TextStyle(color: Color(0xff616366), fontSize: 12, fontWeight: FontWeight.w400, height: 1.5),
   inRangeColor: Color(0xFFE2F0F1),
-  inRangeTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
-  selectedTextStyle: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
-  todayTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
-  defaultTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
+  inRangeTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 16, fontWeight: FontWeight.w400, height: 1.5),
+  selectedTextStyle: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400, height: 1.5),
+  todayTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 16, fontWeight: FontWeight.w400, height: 1.5),
+  defaultTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 16, fontWeight: FontWeight.w400, height: 1.5),
   radius: 25,
-  tileSize: 20,
-  disabledTextStyle: TextStyle(color: Color(0xffD2D4D9), fontSize: 10, fontWeight: FontWeight.w400, height: 1.5),
-  monthTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 9, fontWeight: FontWeight.w600, height: 1.5),
+  tileSize: 40,
+  disabledTextStyle: TextStyle(color: Color(0xffD2D4D9), fontSize: 16, fontWeight: FontWeight.w400, height: 1.5),
+  monthTextStyle: TextStyle(color: Color(0xff1E1E1F), fontSize: 16, fontWeight: FontWeight.w600, height: 1.5),
   quickDateRangeTextStyle: TextStyle(color: Color(0xff3F3F40), fontSize: 14, fontWeight: FontWeight.w400, height: 1.5),
   quickDateRangeBackgroundColor: Colors.transparent,
   selectedQuickDateRangeColor: Color(0xffE7E8EC),
@@ -43,8 +43,9 @@ Widget kDayTileBuilder(
   }
 
   if (dayModel.isSelected) {
-    combinedTextStyle = combinedTextStyle.merge(
-        theme.selectedTextStyle.copyWith(color: dayModel.isEnd && !dayModel.isStart ? theme.selectedColor : null));
+    combinedTextStyle = combinedTextStyle.merge(theme.selectedTextStyle.copyWith(
+        color: dayModel.isEnd && !dayModel.isStart ? theme.selectedColor : null,
+        fontWeight: dayModel.isEnd ? FontWeight.w600 : null));
   }
 
   if (!dayModel.isSelectable) {
