@@ -261,6 +261,7 @@ class DateMenuWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(2),
       child: MenuAnchor(
         style: MenuStyle(
+          visualDensity: VisualDensity.compact,
           padding: const WidgetStatePropertyAll(
             EdgeInsets.symmetric(vertical: 16, horizontal: 8),
           ),
