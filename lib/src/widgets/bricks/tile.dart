@@ -51,27 +51,32 @@ class DayTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: backgroundRadius,
-      color: backgroundColor ?? Colors.transparent,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: () => onTap?.call(value),
-        child: Container(
-          width: size,
-          height: size,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: color,
-            border: Border.all(color: borderColor ?? Colors.transparent, width: 2),
-            borderRadius: radius,
-          ),
-          child: Text(
-            text,
-            style: textStyle,
-          ),
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: backgroundRadius,
+          color: backgroundColor ?? Colors.transparent,
         ),
-      ),
-    );
+        child: Material(
+          borderRadius: radius,
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: () => onTap?.call(value),
+            child: Container(
+              width: size,
+              height: size,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: color,
+                border: Border.all(color: borderColor ?? Colors.transparent, width: 2),
+                borderRadius: radius,
+              ),
+              child: Text(
+                text,
+                style: textStyle,
+              ),
+            ),
+          ),
+        ));
   }
 }
