@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/src/models.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 /// A widget that displays the current and next month in a row along with navigation arrows.
 class MonthSelectorAndDoubleIndicator extends StatelessWidget {
@@ -49,7 +49,10 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
               onTap: onPrevious,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: theme.previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+                child: Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: theme.previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+                ),
               ),
             ),
           ),
@@ -76,7 +79,10 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
               onTap: onNext,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: theme.nextMonthSelector ?? const Icon(Icons.keyboard_arrow_right),
+                child: Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: theme.nextMonthSelector ?? const Icon(Icons.keyboard_arrow_right),
+                ),
               ),
             ),
           ),
@@ -118,7 +124,10 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
               onTap: onPrevious,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: theme.previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+                child: Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: theme.previousMonthSelector ?? const Icon(Icons.keyboard_arrow_left),
+                ),
               ),
             ),
           ),
@@ -130,7 +139,10 @@ class MonthSelectorAndDoubleIndicator extends StatelessWidget {
               onTap: onNext,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: theme.nextMonthSelector ?? const Icon(Icons.keyboard_arrow_right),
+                child: Transform.flip(
+                  flipX: Directionality.of(context) == TextDirection.rtl,
+                  child: theme.nextMonthSelector ?? const Icon(Icons.keyboard_arrow_right),
+                ),
               ),
             ),
           ),
@@ -167,34 +179,34 @@ class DateMenuWidget extends StatelessWidget {
     this.menuColor,
   });
 
-  static const _months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
   List<int> get _availableValues {
     switch (mode) {
       case DateMenuMode.month:
         return List.generate(12, (index) => index + 1);
 
       case DateMenuMode.year:
-        final startYear = DateTime.now().year;
-        final endYear = DateTime.now().year + 10;
+        final currentYear = DateTime.now().year;
 
         return List.generate(
-          endYear - startYear + 1,
-          (index) => startYear + index,
+          11,
+          (index) => currentYear + index,
         );
+    }
+  }
+
+  String _getValueLabel(BuildContext context, int value) {
+    switch (mode) {
+      case DateMenuMode.month:
+        final date = DateTime(DateTime.now().year, value);
+        return DateFormat.MMMM(
+          Localizations.localeOf(context).toString(),
+        ).format(date);
+
+      case DateMenuMode.year:
+        final date = DateTime(value);
+        return DateFormat.y(
+          Localizations.localeOf(context).toString(),
+        ).format(date);
     }
   }
 
@@ -229,16 +241,6 @@ class DateMenuWidget extends StatelessWidget {
           ),
         );
         break;
-    }
-  }
-
-  String _labelForValue(int value) {
-    switch (mode) {
-      case DateMenuMode.month:
-        return _months[value - 1];
-
-      case DateMenuMode.year:
-        return value.toString();
     }
   }
 
@@ -278,7 +280,7 @@ class DateMenuWidget extends StatelessWidget {
         menuChildren: _availableValues
             .map(
               (value) => DateMenuItem(
-                label: _labelForValue(value),
+                label: _getValueLabel(context, value),
                 onPressed: () => _onValuePressed(value),
                 textStyle: menuItemsTextStyle,
               ),
@@ -302,7 +304,7 @@ class DateMenuWidget extends StatelessWidget {
                   spacing: 4,
                   children: [
                     Text(
-                      _labelForValue(selectedValue),
+                      _getValueLabel(context, selectedValue),
                       style: menuLabelTextStyle,
                     ),
                     AnimatedRotation(

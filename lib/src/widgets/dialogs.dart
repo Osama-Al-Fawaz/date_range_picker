@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_date_range_picker/src/widgets/typedefs.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 /// A function to show the dateRange picker dialog at a specific offset.
 ///
@@ -26,9 +26,9 @@ Future<DateRange?> showDateRangePickerDialogWithOffset({
     pageBuilder: (_, __, ___) {
       return Stack(
         children: [
-          Positioned(
+          PositionedDirectional(
             top: offset?.dy ?? 0,
-            left: offset?.dx ?? 0,
+            start: offset?.dx ?? 0,
             child: DateRangePickerDialog(
               builder: builder,
               footerBuilder: footerBuilder ?? DateRangePickerDialogFooter.new,
@@ -89,7 +89,13 @@ Future<DateRange?> showDateRangePickerDialogOnWidget({
 }) async {
   // Compute widget position on screen
   final RenderBox renderBox = widgetContext.findRenderObject() as RenderBox;
-  final Offset offset = renderBox.localToGlobal(Offset.zero);
+  final Offset globalOffset = renderBox.localToGlobal(Offset.zero);
+  final TextDirection textDirection = Directionality.of(context ?? widgetContext);
+  final double screenWidth = MediaQuery.widthOf(context ?? widgetContext);
+  final Offset directionalOffset = Offset(
+    textDirection == TextDirection.ltr ? globalOffset.dx : screenWidth - globalOffset.dx - renderBox.size.width,
+    globalOffset.dy,
+  );
 
   // Show the dateRange picker dialog and get the selected date range
   final dateRange = await showDateRangePickerDialogWithOffset(
@@ -97,7 +103,7 @@ Future<DateRange?> showDateRangePickerDialogOnWidget({
     footerBuilder: dialogFooterBuilder,
     barrierColor: barrierColor,
     builder: pickerBuilder,
-    offset: offset + delta,
+    offset: directionalOffset + delta,
   );
 
   return dateRange;

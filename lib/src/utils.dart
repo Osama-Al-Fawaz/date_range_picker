@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 /// Returns the default week days as strings (using intl).
-List<String> defaultWeekDays({int lengthOfDateNames = 2, String? locale}) {
+List<String> defaultWeekDays({int? lengthOfDateNames, String? locale}) {
   DateFormat dateFormat;
 
   try {

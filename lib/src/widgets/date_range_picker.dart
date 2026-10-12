@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:intl/intl.dart';
 
 /// The default [CalendarTheme] used by the date range picker.
 const CalendarTheme kTheme = CalendarTheme(
@@ -28,6 +29,7 @@ const CalendarTheme kTheme = CalendarTheme(
 /// * [theme] - The theme to apply to the day tile.
 /// * [onTap] - A callback function to be called when the day tile is tapped.
 Widget kDayTileBuilder(
+  BuildContext context,
   DayModel dayModel,
   CalendarTheme theme,
   ValueChanged<DateTime> onTap,
@@ -57,15 +59,15 @@ Widget kDayTileBuilder(
     textStyle: combinedTextStyle,
     backgroundColor: dayModel.isInRange ? theme.inRangeColor : null,
     color: dayModel.isSelected && dayModel.isStart ? theme.selectedColor : null,
-    text: dayModel.date.day.toString(),
+    text: DateFormat.d(Localizations.localeOf(context).toString()).format(dayModel.date),
     value: dayModel.date,
     onTap: dayModel.isSelectable ? onTap : null,
     radius: BorderRadius.circular(theme.radius),
     borderColor: dayModel.isEnd ? theme.selectedColor : null,
-    backgroundRadius: BorderRadius.horizontal(
-      left: Radius.circular(dayModel.isStart ? theme.radius : 0),
-      right: Radius.circular(dayModel.isEnd ? theme.radius : 0),
-    ),
+    backgroundRadius: BorderRadiusDirectional.horizontal(
+      start: Radius.circular(dayModel.isStart ? theme.radius : 0),
+      end: Radius.circular(dayModel.isEnd ? theme.radius : 0),
+    ).resolve(Directionality.of(context)),
   );
 }
 
@@ -75,20 +77,20 @@ class DayNamesRow extends StatelessWidget {
   ///
   /// * [key] - The [Key] for this widget.
   /// * [textStyle] - The style to apply to the day names text.
-  /// * [lengthOfDateName] - The length of the date name to display. Defaults to 3 (e.g., "Mon").
+  /// * [lengthOfDateName] - The length of the date name to display. shows full by default.
   /// * [firstDayOfWeek] - The first day of the week, where 0 is Sunday and 6 is Saturday. Defaults to 0.
   /// * [weekDays] - The names of the days of the week to display. If null, defaults to the default week days.
   const DayNamesRow({
     Key? key,
     required this.textStyle,
     this.weekDays,
-    this.lengthOfDateName = 2,
+    this.lengthOfDateName,
     this.firstDayOfWeek = 0,
   }) : super(key: key);
 
   final TextStyle textStyle;
   final List<String>? weekDays;
-  final int lengthOfDateName;
+  final int? lengthOfDateName;
   final int firstDayOfWeek;
 
   @override
@@ -153,7 +155,7 @@ class DateRangePickerWidget extends StatefulWidget {
     this.separatorThickness = 1,
     this.allowSingleTapDaySelection = false,
     this.firstDayOfWeek = 0,
-    this.lengthOfDateName = 2,
+    this.lengthOfDateName,
   })  : assert(
           firstDayOfWeek >= 0 && firstDayOfWeek <= 6,
           'firstDayOfWeek must be in the range [0..6].',
@@ -208,7 +210,7 @@ class DateRangePickerWidget extends StatefulWidget {
   final double separatorThickness;
 
   /// The length of the date name in the day names row.
-  final int lengthOfDateName;
+  final int? lengthOfDateName;
 
   /// The first day of the week, where 0 is Sunday and 6 is Saturday.
   final int firstDayOfWeek;
@@ -350,7 +352,7 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
     required this.days,
     required this.delta,
     this.firstDayOfWeek = 0,
-    this.lengthOfDateName = 2,
+    this.lengthOfDateName,
     this.fillBefore = false,
   }) : super(key: key);
 
@@ -370,7 +372,7 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
   final int firstDayOfWeek;
 
   /// The length of the date name in the day names row.
-  final int lengthOfDateName;
+  final int? lengthOfDateName;
 
   final bool fillBefore;
 
@@ -393,6 +395,7 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
             days: days,
             delta: delta,
             dayTileBuilder: (dayModel) => kDayTileBuilder(
+              context,
               dayModel,
               theme,
               onDateChanged,
